@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bonizone Content Studio</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050915;
+      --panel: #0b1020;
+      --panel-2: #10182d;
+      --panel-3: #111a31;
+      --line: rgba(255,255,255,.08);
+      --muted: #8ea1c7;
+      --text: #eef4ff;
+      --blue: #5b7cff;
+      --blue-2: #7a94ff;
+      --orange: #ff8b38;
+      --green: #21d0b2;
+      --red: #ff5f70;
+      --yellow: #ffcb52;
+      --radius: 18px;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(91,124,255,.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(255,139,56,.10), transparent 24%),
+        linear-gradient(180deg, #040812 0%, #07101d 100%);
+      color: var(--text);
+    }
+
+    .app {
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+    }
+
+    .sidebar {
+      background: rgba(5,9,21,.88);
+      border-right: 1px solid var(--line);
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 6px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--blue), var(--orange));
+      color: white;
+      font-size: .85rem;
+    }
+
+    .brand-title {
+      font-size: .95rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .brand-sub {
+      font-size: .68rem;
+      color: var(--muted);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .side-group-title {
+      font-size: .68rem;
+      color: var(--muted);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      padding: 0 8px;
+      margin-bottom: 6px;
+    }
+
+    .side-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .side-item {
+      padding: 11px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      color: #d3e0ff;
+      font-size: .9rem;
+      border: 1px solid transparent;
+      background: transparent;
+      transition: .18s ease;
+    }
+
+    .side-item:hover { background: rgba(255,255,255,.04); }
+    .side-item.active {
+      background: linear-gradient(180deg, rgba(91,124,255,.14), rgba(91,124,255,.06));
+      border-color: rgba(91,124,255,.22);
+    }
+
+    .workspace {
+      padding: 22px;
+      overflow: auto;
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 2.2rem;
+      line-height: .95;
+      letter-spacing: -.05em;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 780px;
+      line-height: 1.55;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(16,24,45,.92), rgba(11,16,32,.94));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .card-pad { padding: 16px; }
+
+    .top-grid {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 18px;
+    }
+
+    .section-title {
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .16em;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .field { margin-top: 12px; }
+    .label {
+      font-size: .8rem;
+      color: #dbe6ff;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    textarea, input[type="text"], input[type="number"], input[type="color"], input[type="range"], select {
+      width: 100%;
+      background: var(--panel-3);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 11px 12px;
+      font: inherit;
+      outline: none;
+    }
+
+    textarea { min-height: 86px; resize: vertical; }
+    input:focus, textarea:focus, select:focus { border-color: rgba(122,148,255,.45); box-shadow: 0 0 0 3px rgba(122,148,255,.12); }
+
+    .row-2, .row-3, .row-4 {
+      display: grid;
+      gap: 10px;
+    }
+    .row-2 { grid-template-columns: repeat(2, 1fr); }
+    .row-3 { grid-template-columns: repeat(3, 1fr); }
+    .row-4 { grid-template-columns: repeat(4, 1fr); }
+
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: #dbe6ff;
+      padding: 9px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: .84rem;
+      font-weight: 600;
+    }
+    .chip.active {
+      background: linear-gradient(180deg, rgba(91,124,255,.18), rgba(91,124,255,.06));
+      border-color: rgba(91,124,255,.22);
+    }
+
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 14px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--blue), var(--blue-2)); color: #06101f; }
+    .btn-secondary { background: rgba(255,255,255,.05); color: white; border: 1px solid var(--line); }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 16px;
+    }
+
+    .score-box {
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.02);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .score-ring {
+      width: 140px;
+      height: 140px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      background: conic-gradient(var(--blue) calc(var(--score) * 1%), rgba(255,255,255,.08) 0);
+    }
+    .score-ring::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border-radius: 999px;
+      background: #0a1020;
+      border: 1px solid var(--line);
+    }
+    .score-inner { position: relative; z-index: 1; text-align: center; }
+    .score-inner .num { font-size: 2.1rem; font-weight: 900; }
+    .score-inner .txt { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .14em; }
+
+    .score-notes {
+      display: grid;
+      gap: 10px;
+    }
+
+    .note {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .note small {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: .68rem;
+    }
+    .note p { margin: 0; line-height: 1.55; }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .tab {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--line);
+      cursor: pointer;
+      font-size: .85rem;
+      color: #dbe6ff;
+    }
+    .tab.active {
+      background: linear-gradient(180deg, rgba(91,124,255,.18), rgba(91,124,255,.06));
+      border-color: rgba(91,124,255,.22);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .text-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .output {
+      background: rgba(255,255,255,.025);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      display: grid;
+      min-height: 280px;
+    }
+    .output-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      font-size: .85rem;
+      font-weight: 700;
+    }
+    .output-body {
+      padding: 12px;
+      white-space: pre-wrap;
+      line-height: 1.58;
+      font-size: .9rem;
+      overflow: auto;
+      max-height: 360px;
+    }
+
+    .layout-shell {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px;
+    }
+
+    .layout-editor {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .mini-section {
+      background: rgba(255,255,255,.025);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .range-label {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: .74rem;
+      margin-top: -2px;
+      margin-bottom: 2px;
+    }
+
+    .preview-shell {
+      display: grid;
+      gap: 14px;
+    }
+
+    .preview-toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .preview-card {
+      background: rgba(255,255,255,.025);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .preview-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: .82rem;
+      font-weight: 700;
+    }
+
+    .frame {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #0a1020;
+      border: 1px solid var(--line);
+      isolation: isolate;
+    }
+    .frame.story { aspect-ratio: 9 / 16; }
+
+    .art-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: 0;
+    }
+
+    .art-split {
+      position: absolute;
+      left: 0;
+      right: 0;
+      z-index: 1;
+      background: var(--blue);
+    }
+    .art-split.bottom { bottom: 0; height: 42%; }
+    .art-split.top { top: 0; height: 42%; }
+
+    .art-meta {
+      position: absolute;
+      top: 12px;
+      left: 14px;
+      right: 14px;
+      z-index: 3;
+      display: flex;
+      justify-content: space-between;
+      font-size: .62rem;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.92);
+    }
+
+    .art-copy {
+      position: absolute;
+      z-index: 3;
+      left: 8%;
+      top: 78%;
+      width: 76%;
+      transform: translateY(-100%);
+      color: white;
+      text-shadow: 0 3px 18px rgba(0,0,0,.26);
+    }
+
+    .art-headline {
+      margin: 0;
+      font-family: "Space Grotesk", Inter, sans-serif;
+      font-size: 31px;
+      line-height: .95;
+      letter-spacing: -.05em;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .art-subline {
+      margin-top: 8px;
+      font-size: 14px;
+      line-height: 1.35;
+      color: rgba(255,255,255,.94);
+    }
+
+    .carousel-strip {
+      display: flex;
+      gap: 8px;
+      overflow: auto;
+      padding-bottom: 4px;
+    }
+
+    .slide-chip {
+      min-width: 86px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      padding: 10px;
+      font-size: .74rem;
+      cursor: pointer;
+    }
+    .slide-chip.active {
+      background: linear-gradient(180deg, rgba(91,124,255,.18), rgba(91,124,255,.06));
+      border-color: rgba(91,124,255,.22);
+    }
+
+    .slide-editor {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: .8rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1200px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .top-grid, .layout-shell, .text-grid, .score-grid, .preview-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">B</div>
+        <div>
+          <div class="brand-title">BONI STUDIO</div>
+          <div class="brand-sub">content strategy engine</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="side-group-title">Studio</div>
+        <div class="side-list">
+          <div class="side-item active">Visão geral</div>
+          <div class="side-item">Texto</div>
+          <div class="side-item">Layouts</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="side-group-title">Formatos</div>
+        <div class="side-list">
+          <div class="side-item">Post único</div>
+          <div class="side-item">Carrossel</div>
+          <div class="side-item">Stories</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <div class="hero">
+        <div>
+          <h1>Content Studio</h1>
+          <p>Agora ficou simples do jeito certo: score dinâmico, texto separado de layout, editor visual mais completo e cada formato com sua própria área de ajuste.</p>
+        </div>
+      </div>
+
+      <section class="card card-pad">
+        <div class="top-grid">
+          <div>
+            <div class="section-title">Estratégia</div>
+            <div class="field">
+              <div class="label"><span>Tema</span></div>
+              <textarea id="theme">Maxx Crosby nos Ravens muda a AFC?</textarea>
+            </div>
+            <div class="row-3">
+              <div class="field">
+                <div class="label"><span>Ângulo</span></div>
+                <select id="angle">
+                  <option value="analise">Análise</option>
+                  <option value="explicacao">Explicação</option>
+                  <option value="opiniao">Opinião</option>
+                  <option value="bastidor">Bastidor</option>
+                  <option value="comparacao">Comparação</option>
+                </select>
+              </div>
+              <div class="field">
+                <div class="label"><span>Tom</span></div>
+                <select id="tone">
+                  <option value="leve">Leve</option>
+                  <option value="didatico">Didático</option>
+                  <option value="provocativo">Provocativo</option>
+                  <option value="quente">Quente</option>
+                </select>
+              </div>
+              <div class="field">
+                <div class="label"><span>Urgência</span></div>
+                <select id="urgency">
+                  <option value="quente">Quente</option>
+                  <option value="frio">Frio</option>
+                  <option value="atemporal">Atemporal</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <div class="label"><span>Patrocinador</span></div>
+              <input id="sponsor" type="text" value="nenhum" />
+            </div>
+            <div class="btn-row">
+              <button class="btn-primary" id="generateBtn">Gerar tudo</button>
+              <button class="btn-secondary" id="improveBtn">Melhorar score</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-title">Leitura da pauta</div>
+            <div class="score-grid">
+              <div class="score-box">
+                <div class="score-ring" id="scoreRing" style="--score:68;">
+                  <div class="score-inner">
+                    <div class="num" id="scoreNum">68</div>
+                    <div class="txt">score</div>
+                  </div>
+                </div>
+              </div>
+              <div class="score-notes">
+                <div class="note"><small>Diagnóstico</small><p id="scoreLabel">Bom potencial</p></div>
+                <div class="note"><small>Leitura crítica</small><p id="scoreCritique">Tema com boa base. Falta só um empurrão de especificidade.</p></div>
+                <div class="note"><small>Como melhorar</small><p id="scoreImprove">Troque o genérico pelo concreto.</p></div>
+                <div class="note"><small>Headline melhorada</small><p id="scoreHeadline">Tem assunto aqui. E assunto grande.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card card-pad">
+        <div class="tabs">
+          <div class="tab active" data-tab="textos">Textos</div>
+          <div class="tab" data-tab="layout-post">Layout: Post</div>
+          <div class="tab" data-tab="layout-carousel">Layout: Carrossel</div>
+          <div class="tab" data-tab="layout-story">Layout: Stories</div>
+        </div>
+
+        <div class="tab-panel active" id="panel-textos">
+          <div class="text-grid">
+            <div class="output"><div class="output-head"><span>Carrossel</span><button class="btn-secondary" data-copy="carouselOutput">Copiar</button></div><div class="output-body" id="carouselOutput" contenteditable="true"></div></div>
+            <div class="output"><div class="output-head"><span>Legenda Instagram</span><button class="btn-secondary" data-copy="captionOutput">Copiar</button></div><div class="output-body" id="captionOutput" contenteditable="true"></div></div>
+            <div class="output"><div class="output-head"><span>Enquetes Stories</span><button class="btn-secondary" data-copy="storiesOutput">Copiar</button></div><div class="output-body" id="storiesOutput" contenteditable="true"></div></div>
+            <div class="output"><div class="output-head"><span>Roteiro Reel</span><button class="btn-secondary" data-copy="reelOutput">Copiar</button></div><div class="output-body" id="reelOutput" contenteditable="true"></div></div>
+            <div class="output"><div class="output-head"><span>LinkedIn</span><button class="btn-secondary" data-copy="linkedinOutput">Copiar</button></div><div class="output-body" id="linkedinOutput" contenteditable="true"></div></div>
+            <div class="output"><div class="output-head"><span>Newsletter</span><button class="btn-secondary" data-copy="newsletterOutput">Copiar</button></div><div class="output-body" id="newsletterOutput" contenteditable="true"></div></div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="panel-layout-post">
+          <div class="layout-shell">
+            <div class="layout-editor">
+              <div class="mini-section">
+                <div class="section-title">Texto</div>
+                <div class="field"><div class="label"><span>Título</span></div><input id="postHeadlineInput" type="text"></div>
+                <div class="field"><div class="label"><span>Subchamada</span></div><input id="postSublineInput" type="text"></div>
+                <div class="field"><div class="label"><span>Imagem</span></div><input id="postImageInput" type="text"></div>
+              </div>
+
+              <div class="mini-section">
+                <div class="section-title">Editor simples de layout</div>
+                <div class="row-2">
+                  <div class="field"><div class="label"><span>Fonte</span></div><select id="postFont"><option value="Inter, system-ui, sans-serif">Inter</option><option value="'Space Grotesk', sans-serif">Space Grotesk</option><option value="'DM Sans', sans-serif">DM Sans</option><option value="Georgia, serif">Georgia</option></select></div>
+                  <div class="field"><div class="label"><span>Alinhamento</span></div><select id="postAlign"><option value="left">Esquerda</option><option value="center">Centro</option><option value="right">Direita</option></select></div>
+                </div>
+                <div class="row-2">
+                  <div class="field"><div class="label"><span>Bloco</span></div><select id="postSplitPos"><option value="bottom">Embaixo</option><option value="top">Em cima</option></select></div>
+                  <div class="field"><div class="label"><span>Cor</span></div><input id="postSplitColor" type="color" value="#5b7cff"></div>
+                </div>
+                <div class="field"><div class="label"><span>Tamanho título</span><span id="postTitleSizeVal">31</span></div><input id="postTitleSize" type="range" min="20" max="60" value="31"></div>
+                <div class="field"><div class="label"><span>Tamanho sub</span><span id="postSubSizeVal">14</span></div><input id="postSubSize" type="range" min="10" max="26" value="14"></div>
+                <div class="field"><div class="label"><span>Entrelinha</span><span id="postLineHeightVal">0.95</span></div><input id="postLineHeight" type="range" min="0.8" max="1.5" step="0.05" value="0.95"></div>
+                <div class="row-3">
+                  <div class="field"><div class="label"><span>X</span><span id="postXVal">8</span></div><input id="postX" type="range" min="4" max="30" value="8"></div>
+                  <div class="field"><div class="label"><span>Y</span><span id="postYVal">78</span></div><input id="postY" type="range" min="20" max="90" value="78"></div>
+                  <div class="field"><div class="label"><span>Largura</span><span id="postWVal">76</span></div><input id="postW" type="range" min="35" max="90" value="76"></div>
+                </div>
+                <div class="field"><div class="label"><span>Altura bloco</span><span id="postSplitSizeVal">42</span></div><input id="postSplitSize" type="range" min="20" max="70" value="42"></div>
+              </div>
+            </div>
+
+            <div class="preview-shell">
+              <div class="preview-toolbar"><div class="hint">Editor do post único.</div><button class="btn-primary" id="downloadPostBtn">Baixar post</button></div>
+              <div class="preview-card">
+                <div class="preview-top"><span>Post único</span></div>
+                <div class="frame" id="postFrame">
+                  <div class="art-bg" id="postBg"></div>
+                  <div class="art-split bottom" id="postSplit"></div>
+                  <div class="art-meta"><span>BONIZONE</span><span>@LUCASBONINI</span></div>
+                  <div class="art-copy" id="postCopy">
+                    <h2 class="art-headline" id="postHeadline"></h2>
+                    <div class="art-subline" id="postSubline"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="panel-layout-carousel">
+          <div class="layout-shell">
+            <div class="layout-editor">
+              <div class="mini-section">
+                <div class="section-title">Slides</div>
+                <div class="carousel-strip" id="carouselStrip"></div>
+                <div class="btn-row">
+                  <button class="btn-secondary" id="prevSlideBtn">Anterior</button>
+                  <button class="btn-secondary" id="nextSlideBtn">Próximo</button>
+                  <button class="btn-secondary" id="autofillSlidesBtn">Preencher 10 slides</button>
+                </div>
+              </div>
+
+              <div class="mini-section">
+                <div class="section-title">Slide ativo</div>
+                <div class="field"><div class="label"><span>Título</span></div><input id="carouselHeadlineInput" type="text"></div>
+                <div class="field"><div class="label"><span>Subchamada</span></div><input id="carouselSublineInput" type="text"></div>
+                <div class="field"><div class="label"><span>Imagem</span></div><input id="carouselImageInput" type="text"></div>
+              </div>
+
+              <div class="mini-section">
+                <div class="section-title">Layout do slide</div>
+                <div class="row-2">
+                  <div class="field"><div class="label"><span>Fonte</span></div><select id="carouselFont"><option value="Inter, system-ui, sans-serif">Inter</option><option value="'Space Grotesk', sans-serif">Space Grotesk</option><option value="'DM Sans', sans-serif">DM Sans</option><option value="Georgia, serif">Georgia</option></select></div>
+                  <div class="field"><div class="label"><span>Alinhamento</span></div><select id="carouselAlign"><option value="left">Esquerda</option><option value="center">Centro</option><option value="right">Direita</option></select></div>
+                </div>
+                <div class="row-2">
+                  <div class="field"><div class="label"><span>Bloco</span></div><select id="carouselSplitPos"><option value="bottom">Embaixo</option><option value="top">Em cima</option></select></div>
+                  <div class="field"><div class="label"><span>Cor</span></div><input id="carouselSplitColor" type="color" value="#5b7cff"></div>
+                </div>
+                <div class="field"><div class="label"><span>Tamanho título</span><span id="carouselTitleSizeVal">31</span></div><input id="carouselTitleSize" type="range" min="20" max="60" value="31"></div>
+                <div class="field"><div class="label"><span>Tamanho sub</span><span id="carouselSubSizeVal">14</span></div><input id="carouselSubSize" type="range" min="10" max="26" value="14"></div>
+                <div class="field"><div class="label"><span>Entrelinha</span><span id="carouselLineHeightVal">0.95</span></div><input id="carouselLineHeight" type="range" min="0.8" max="1.5" step="0.05" value="0.95"></div>
+                <div class="row-3">
+                  <div class="field"><div class="label"><span>X</span><span id="carouselXVal">8</span></div><input id="carouselX" type="range" min="4" max="30" value="8"></div>
+                  <div class="field"><div class="label"><span>Y</span><span id="carouselYVal">78</span></div><input id="carouselY" type="range" min="20" max="90" value="78"></div>
+                  <div class="field"><div class="label"><span>Largura</span><span id="carouselWVal">76</span></div><input id="carouselW" type="range" min="35" max="90" value="76"></div>
+                </div>
+                <div class="field"><div class="label"><span>Altura bloco</span><span id="carouselSplitSizeVal">42</span></div><input id="carouselSplitSize" type="range" min="20" max="70" value="42"></div>
+              </div>
+            </div>
+
+            <div class="preview-shell">
+              <div class="preview-toolbar"><div class="hint">Editor slide a slide.</div><button class="btn-primary" id="downloadCarouselSlideBtn">Baixar slide</button></div>
+              <div class="preview-card">
+                <div class="preview-top"><span id="carouselPreviewLabel">Slide 1</span></div>
+                <div class="frame" id="carouselFrame">
+                  <div class="art-bg" id="carouselBg"></div>
+                  <div class="art-split bottom" id="carouselSplit"></div>
+                  <div class="art-meta"><span>BONIZONE</span><span>@LUCASBONINI</span></div>
+                  <div class="art-copy" id="carouselCopy">
+                    <h2 class="art-headline" id="carouselHeadline"></h2>
+                    <div class="art-subline" id="carouselSubline"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="panel-layout-story">
+          <div class="layout-shell">
+            <div class="layout-editor">
+              <div class="mini-section">
+                <div class="section-title">Texto</div>
+                <div class="field"><div class="label"><span>Título</span></div><input id="storyHeadlineInput" type="text"></div>
+                <div class="field"><div class="label"><span>Subchamada</span></div><input id="storySublineInput" type="text"></div>
+                <div class="field"><div class="label"><span>Imagem</span></div><input id="storyImageInput" type="text"></div>
+              </div>
+
+              <div class="mini-section">
+                <div class="section-title">Editor simples de layout</div>
+                <div class="row-2">
+                  <div class="field"><div class="label"><span>Fonte</span></div><select id="storyFont"><option value="Inter, system-ui, sans-serif">Inter</option><option value="'Space Grotesk', sans-serif">Space Grotesk</option><option value="'DM Sans', sans-serif">DM Sans</option><option value="Georgia, serif">Georgia</option></select></div>
+                  <div class="field"><div class="label"><span>Alinhamento</span></div><select id="storyAlign"><option value="left">Esquerda</option><option value="center">Centro</option><option value="right">Direita</option></select></div>
+                </div>
+                <div class="row-2">
+                  <div class="field"><div class="label"><span>Bloco</span></div><select id="storySplitPos"><option value="bottom">Embaixo</option><option value="top">Em cima</option></select></div>
+                  <div class="field"><div class="label"><span>Cor</span></div><input id="storySplitColor" type="color" value="#5b7cff"></div>
+                </div>
+                <div class="field"><div class="label"><span>Tamanho título</span><span id="storyTitleSizeVal">31</span></div><input id="storyTitleSize" type="range" min="20" max="60" value="31"></div>
+                <div class="field"><div class="label"><span>Tamanho sub</span><span id="storySubSizeVal">14</span></div><input id="storySubSize" type="range" min="10" max="26" value="14"></div>
+                <div class="field"><div class="label"><span>Entrelinha</span><span id="storyLineHeightVal">0.95</span></div><input id="storyLineHeight" type="range" min="0.8" max="1.5" step="0.05" value="0.95"></div>
+                <div class="row-3">
+                  <div class="field"><div class="label"><span>X</span><span id="storyXVal">8</span></div><input id="storyX" type="range" min="4" max="30" value="8"></div>
+                  <div class="field"><div class="label"><span>Y</span><span id="storyYVal">78</span></div><input id="storyY" type="range" min="20" max="90" value="78"></div>
+                  <div class="field"><div class="label"><span>Largura</span><span id="storyWVal">76</span></div><input id="storyW" type="range" min="35" max="90" value="76"></div>
+                </div>
+                <div class="field"><div class="label"><span>Altura bloco</span><span id="storySplitSizeVal">42</span></div><input id="storySplitSize" type="range" min="20" max="70" value="42"></div>
+              </div>
+            </div>
+
+            <div class="preview-shell">
+              <div class="preview-toolbar"><div class="hint">Editor do story.</div><button class="btn-primary" id="downloadStoryBtn">Baixar story</button></div>
+              <div class="preview-card">
+                <div class="preview-top"><span>Story</span></div>
+                <div class="frame story" id="storyFrame">
+                  <div class="art-bg" id="storyBg"></div>
+                  <div class="art-split bottom" id="storySplit"></div>
+                  <div class="art-meta"><span>BONIZONE</span><span>@LUCASBONINI</span></div>
+                  <div class="art-copy" id="storyCopy">
+                    <h2 class="art-headline" id="storyHeadline"></h2>
+                    <div class="art-subline" id="storySubline"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const state = {
+      activeSlide: 1,
+      slides: Array.from({ length: 10 }, () => ({
+        title: '',
+        subline: '',
+        image: '',
+        style: null,
+      })),
+      styles: {
+        post: { font: 'Inter, system-ui, sans-serif', align: 'left', titleSize: 31, subSize: 14, lineHeight: 0.95, x: 8, y: 78, w: 76, splitPos: 'bottom', splitColor: '#5b7cff', splitSize: 42 },
+        story: { font: 'Inter, system-ui, sans-serif', align: 'left', titleSize: 31, subSize: 14, lineHeight: 0.95, x: 8, y: 78, w: 76, splitPos: 'bottom', splitColor: '#5b7cff', splitSize: 42 },
+        carouselBase: { font: 'Inter, system-ui, sans-serif', align: 'left', titleSize: 31, subSize: 14, lineHeight: 0.95, x: 8, y: 78, w: 76, splitPos: 'bottom', splitColor: '#5b7cff', splitSize: 42 },
+      }
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function shorten(str, max) {
+      str = str || '';
+      return str.length <= max ? str : str.slice(0, max - 1).trim() + '…';
+    }
+
+    function phrase(angle, tone, urgency) {
+      const a = { analise:'análise', explicacao:'explicação', opiniao:'opinião', bastidor:'bastidor', comparacao:'comparação' }[angle];
+      const t = { leve:'leve', didatico:'didática', provocativo:'provocativa', quente:'quente' }[tone];
+      const u = { quente:'de agora', frio:'com distância', atemporal:'mais ampla' }[urgency];
+      return `${a} ${t} ${u}`;
+    }
+
+    function scoreTheme(theme) {
+      const t = (theme || '').toLowerCase();
+      let score = 38;
+      const specific = /\d|chiefs|ravens|raiders|dolphins|broncos|bills|eagles|cowboys|brady|mahomes|allen|jackson|crosby|draft|super bowl|afc|nfc|playoffs|combine|free agency|trade/.test(t);
+      const debate = /melhor|pior|goat|culpa|erro|acabou|muda|decide|vale|troca|lesão|quebra/.test(t);
+      const hot = /hoje|agora|2026|2025|draft|free agency|trade|troca|temporada|combine|playoffs/.test(t);
+      const broad = (theme || '').split(/\s+/).filter(Boolean).length < 5;
+      const q = (theme || '').includes('?');
+      if (specific) score += 17;
+      if (debate) score += 13;
+      if (hot) score += 11;
+      if (q) score += 5;
+      if (broad) score -= 9;
+      score = Math.max(20, Math.min(96, score));
+      const label = score >= 80 ? 'Muito potente' : score >= 65 ? 'Bom potencial' : 'Precisa de ajuste';
+      const critique = score >= 65
+        ? 'Tema com boa base. Existe interesse real, mas falta um empurrão de especificidade para ampliar curiosidade e compartilhamento.'
+        : 'Do jeito que está, o assunto corre o risco de ficar amplo demais e pouco memorável.';
+      const improve = `Deixe mais específico. Exemplo: “${buildImprovedTheme(theme)}”.`;
+      const headline = score >= 80 ? 'Tem pauta aqui. E pauta grande.' : score >= 65 ? 'Boa pauta, mas dá para deixar mais afiada.' : 'O tema existe. O gancho ainda não.';
+      return { score, label, critique, improve, headline };
+    }
+
+    function buildImprovedTheme(theme) {
+      theme = theme || 'O que muda na NFL';
+      if (theme.includes('?')) return theme.replace('?', '') + ' de verdade?';
+      if (/afc|nfc/i.test(theme)) return theme + ' e quem ganha com isso agora?';
+      return theme + ' e por que isso importa agora?';
+    }
+
+    function buildTexts() {
+      const theme = $('theme').value.trim();
+      const sponsor = $('sponsor').value.trim() || 'nenhum';
+      const angle = $('angle').value;
+      const tone = $('tone').value;
+      const urgency = $('urgency').value;
+      const style = phrase(angle, tone, urgency);
+
+      const carousel = [
+        shorten(theme, 60),
+        `Aqui vai uma ${style} do tema.`,
+        `Olha o tamanho dessa pauta: ${theme}. Quando a gente entra nela com ${style}, fica claro que não é só manchete.`,
+        tone === 'provocativo' ? 'A real? Tem gente lendo isso do jeito mais fácil possível.' : 'Particularmente, o que mais me chama atenção aqui é o efeito em percepção e narrativa.',
+        angle === 'comparacao' ? 'Quando você compara com outros casos da NFL, a diferença aparece no encaixe e no contexto.' : 'Se você pega os detalhes, a história sai da manchete e vai para as consequências.',
+        urgency === 'quente' ? 'Como o tema está quente, a leitura precisa ser rápida, mas não pode ser rasa.' : 'Com mais calma, dá para separar o barulho do que realmente importa.',
+        tone === 'didatico' ? 'Então vamos simplificar: o que aconteceu, por que importa e o que muda daqui para frente.' : 'Na prática, esse tema abre duas conversas: o agora e o que vem depois.',
+        `É por isso que essa pauta funciona bem em carrossel: ${style}, progressão e retenção.`,
+        'Se a gente quiser deixar isso ainda mais forte, o caminho é simples: consequência clara e pergunta que divide opinião.',
+        'No fim, a pergunta real é esta: isso é só barulho de momento ou sinal concreto de mudança?'
+      ].join('\n\n');
+
+      const caption = `${shorten(theme, 100)}\n\n${theme} entra numa categoria boa de conteúdo: assunto que parece simples, mas cresce quando a gente olha com ${style}.\n\nEu acho que a parte mais interessante aqui está no efeito em cadeia. Muda narrativa, muda leitura de força e muda a forma como você enxerga a temporada.\n\nPara você, isso muda muita coisa ou estão exagerando?\n\n#NFL #FutebolAmericano #NFLBrasil #MiamiDolphins #DenverBroncos #NFLNews`;
+
+      const stories = `Enquete 1\nPergunta: ${shorten((urgency === 'quente' ? 'Isso muda a NFL agora? ' : 'Isso realmente importa? ') + theme, 80)}\nOpção A: Muda muito\nOpção B: Só barulho\n\nEnquete 2\nPergunta: ${shorten(angle === 'comparacao' ? 'Quem pesa mais nessa comparação?' : 'O que pesa mais nessa história?', 80)}\nOpção A: Nome forte\nOpção B: Encaixe real`;
+
+      const reel = `Gancho\nPara tudo um segundo porque ${theme} ${tone === 'provocativo' ? 'tem gente lendo isso errado' : 'tem mais peso do que parece'}.\n${sponsor !== 'nenhum' ? `\nPatrocínio: esse vídeo é um oferecimento de ${sponsor}.\n` : '\n'}Desenvolvimento\n${angle === 'explicacao' ? 'Eu vou te explicar isso do jeito mais simples possível.' : 'Eu vou abrir essa jogada com calma.'} Quando a gente olha só para a manchete, parece uma história simples. Mas não é.\n\nEu acho que a análise boa começa quando a gente sai do óbvio. Não basta olhar para o nome. Tem que olhar para o encaixe, para o timing e para a consequência.\n\nSe você quiser, eu aprofundo isso no YouTube com mais calma, mais contexto e mais detalhe.\n\nEu sou Lucas Bonini, e é assim que eu vejo o jogo.`;
+
+      const linkedin = `${shorten(theme, 120)}\n\n${urgency === 'quente' ? 'Quando o tema está quente, a tentação de concluir rápido é enorme.' : urgency === 'frio' ? 'Quando a poeira baixa, a qualidade da leitura costuma melhorar.' : 'Alguns temas continuam relevantes mesmo quando saem do pico da conversa.'}\n\n${angle === 'bastidor' ? 'O bastidor quase sempre explica mais do que a manchete.' : angle === 'comparacao' ? 'Comparar cenários costuma revelar mais do que reagir à primeira impressão.' : 'Contexto explica mais do que o destaque principal.'}\n\nNa NFL, bons movimentos raramente são só sobre talento. Eles são sobre encaixe, timing, leitura de cenário, pressão e impacto no todo.\n\n${tone === 'provocativo' ? 'Particularmente, eu acho que o erro mais comum é a leitura apressada.' : tone === 'didatico' ? 'Particularmente, eu acho que vale organizar essa história em camadas.' : 'Particularmente, eu acho que as melhores leituras pedem mais calma.'}\n\nEm qualquer ambiente competitivo, a pergunta não deveria ser só “quem é bom?”. A pergunta certa costuma ser “o que muda quando essa peça entra no tabuleiro?”.\n\nÉ isso que separa reação de análise.\n\nPara você, qual é a camada mais importante dessa história?\n\nEu sou Lucas Bonini, e é assim que eu vejo o jogo.\n\n#NFL #Esporte #Liderança`;
+
+      const newsletter = `Assunto do email: ${shorten(theme, 60)}\n\n${urgency === 'quente' ? 'Tem tema que entra quente no noticiário e exige leitura rápida.' : urgency === 'frio' ? 'Tem tema que melhora quando a gente olha com mais calma.' : 'Tem tema que continua relevante mesmo fora do pico da notícia.'} ${theme}.\n\nO ponto central aqui não é só o acontecimento em si. É a relevância dele dentro do momento atual da liga. ${angle === 'comparacao' ? 'E aqui a comparação com outros casos da liga ajuda muito a separar hype de substância.' : angle === 'bastidor' ? 'E aqui o bastidor ajuda muito a separar hype de substância.' : 'E aqui o recorte certo ajuda muito a separar hype de substância.'}\n\nQuando uma pauta junta nome forte, expectativa do torcedor, leitura de elenco e possibilidade de mudança no tabuleiro, ela automaticamente ganha outra dimensão.\n\n${tone === 'provocativo' ? 'A real é que tem leitura preguiçosa acontecendo em volta desse assunto.' : 'Eu acho que é exatamente aí que a leitura fica mais interessante.'} Muita gente consome NFL olhando só para estrelas. Mas o jogo real, quase sempre, está nos detalhes.\n\nParticularmente, o que mais me impressiona nesses casos é como uma pauta aparentemente simples abre conversas maiores. Quem assume mais responsabilidade? Quem passa a ser mais cobrado? Qual rival sente esse movimento primeiro?\n\nSe eu tivesse que resumir minha visão, eu diria o seguinte: este é o tipo de assunto que vale menos pela manchete e mais pelo rastro que deixa.\n\nObrigado por ler até aqui. Me responde este email se quiser continuar a conversa.\n\nInstagram: @lucasbonini\nYouTube: Lucas Bonini\n\nEu sou Lucas Bonini, e é assim que eu vejo o jogo.`;
+
+      $('carouselOutput').textContent = carousel;
+      $('captionOutput').textContent = caption;
+      $('storiesOutput').textContent = stories;
+      $('reelOutput').textContent = reel;
+      $('linkedinOutput').textContent = linkedin;
+      $('newsletterOutput').textContent = newsletter;
+    }
+
+    function syncScore() {
+      const s = scoreTheme($('theme').value.trim());
+      $('scoreRing').style.setProperty('--score', s.score);
+      $('scoreNum').textContent = s.score;
+      $('scoreLabel').textContent = s.label;
+      $('scoreCritique').textContent = s.critique;
+      $('scoreImprove').textContent = s.improve;
+      $('scoreHeadline').textContent = s.headline;
+    }
+
+    function improveTheme() {
+      $('theme').value = buildImprovedTheme($('theme').value.trim());
+      generateAll();
+    }
+
+    function applyStyle(framePrefix, style) {
+      const copy = $(framePrefix + 'Copy');
+      const split = $(framePrefix + 'Split');
+      const headline = $(framePrefix + 'Headline');
+      const subline = $(framePrefix + 'Subline');
+      headline.style.fontFamily = style.font;
+      subline.style.fontFamily = style.font;
+      headline.style.fontSize = style.titleSize + 'px';
+      subline.style.fontSize = style.subSize + 'px';
+      headline.style.lineHeight = style.lineHeight;
+      copy.style.left = style.x + '%';
+      copy.style.top = style.y + '%';
+      copy.style.width = style.w + '%';
+      copy.style.textAlign = style.align;
+      split.className = 'art-split ' + style.splitPos;
+      split.style.background = style.splitColor;
+      split.style.height = style.splitSize + '%';
+    }
+
+    function updatePostPreview() {
+      const style = state.styles.post;
+      $('postHeadline').textContent = $('postHeadlineInput').value;
+      $('postSubline').textContent = $('postSublineInput').value;
+      $('postBg').style.backgroundImage = `url(${$('postImageInput').value})`;
+      applyStyle('post', style);
+      syncRangeDisplays('post');
+    }
+
+    function updateStoryPreview() {
+      const style = state.styles.story;
+      $('storyHeadline').textContent = $('storyHeadlineInput').value;
+      $('storySubline').textContent = $('storySublineInput').value;
+      $('storyBg').style.backgroundImage = `url(${$('storyImageInput').value})`;
+      applyStyle('story', style);
+      syncRangeDisplays('story');
+    }
+
+    function getCarouselStyle() {
+      return state.slides[state.activeSlide - 1].style || { ...state.styles.carouselBase };
+    }
+
+    function updateCarouselPreview() {
+      const slide = state.slides[state.activeSlide - 1];
+      const style = getCarouselStyle();
+      $('carouselPreviewLabel').textContent = `Slide ${state.activeSlide}`;
+      $('carouselHeadline').textContent = slide.title || '';
+      $('carouselSubline').textContent = slide.subline || '';
+      $('carouselBg').style.backgroundImage = `url(${slide.image || $('postImageInput').value})`;
+      applyStyle('carousel', style);
+      syncRangeDisplays('carousel');
+      renderCarouselStrip();
+    }
+
+    function syncRangeDisplays(prefix) {
+      $(prefix + 'TitleSizeVal').textContent = $(prefix + 'TitleSize').value;
+      $(prefix + 'SubSizeVal').textContent = $(prefix + 'SubSize').value;
+      $(prefix + 'LineHeightVal').textContent = $(prefix + 'LineHeight').value;
+      $(prefix + 'XVal').textContent = $(prefix + 'X').value;
+      $(prefix + 'YVal').textContent = $(prefix + 'Y').value;
+      $(prefix + 'WVal').textContent = $(prefix + 'W').value;
+      $(prefix + 'SplitSizeVal').textContent = $(prefix + 'SplitSize').value;
+    }
+
+    function pullStyleToControls(prefix, style) {
+      $(prefix + 'Font').value = style.font;
+      $(prefix + 'Align').value = style.align;
+      $(prefix + 'TitleSize').value = style.titleSize;
+      $(prefix + 'SubSize').value = style.subSize;
+      $(prefix + 'LineHeight').value = style.lineHeight;
+      $(prefix + 'X').value = style.x;
+      $(prefix + 'Y').value = style.y;
+      $(prefix + 'W').value = style.w;
+      $(prefix + 'SplitPos').value = style.splitPos;
+      $(prefix + 'SplitColor').value = style.splitColor;
+      $(prefix + 'SplitSize').value = style.splitSize;
+      syncRangeDisplays(prefix);
+    }
+
+    function pushControlsToStyle(prefix, target) {
+      target.font = $(prefix + 'Font').value;
+      target.align = $(prefix + 'Align').value;
+      target.titleSize = Number($(prefix + 'TitleSize').value);
+      target.subSize = Number($(prefix + 'SubSize').value);
+      target.lineHeight = Number($(prefix + 'LineHeight').value);
+      target.x = Number($(prefix + 'X').value);
+      target.y = Number($(prefix + 'Y').value);
+      target.w = Number($(prefix + 'W').value);
+      target.splitPos = $(prefix + 'SplitPos').value;
+      target.splitColor = $(prefix + 'SplitColor').value;
+      target.splitSize = Number($(prefix + 'SplitSize').value);
+    }
+
+    function initEditors() {
+      const theme = $('theme').value.trim();
+      const headline = shorten(theme || 'Tema em análise', 60);
+      const sub = 'O ponto não é só o fato. É o que isso muda de verdade.';
+      $('postHeadlineInput').value = headline;
+      $('postSublineInput').value = sub;
+      $('postImageInput').value = 'https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&w=1200&q=80';
+      $('storyHeadlineInput').value = headline;
+      $('storySublineInput').value = sub;
+      $('storyImageInput').value = $('postImageInput').value;
+      autofillSlides();
+      pullStyleToControls('post', state.styles.post);
+      pullStyleToControls('story', state.styles.story);
+      pullStyleToControls('carousel', getCarouselStyle());
+      updatePostPreview();
+      updateStoryPreview();
+      updateCarouselPreview();
+    }
+
+    function autofillSlides() {
+      const theme = $('theme').value.trim();
+      const angle = $('angle').value;
+      const tone = $('tone').value;
+      const urgency = $('urgency').value;
+      const lines = buildTextArray(theme, angle, tone, urgency);
+      state.slides = Array.from({ length: 10 }, (_, i) => ({
+        title: lines[i] || '',
+        subline: i === 0 ? `Uma ${phrase(angle, tone, urgency)} do tema.` : '',
+        image: $('postImageInput')?.value || 'https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&w=1200&q=80',
+        style: state.slides[i]?.style || { ...state.styles.carouselBase }
+      }));
+      state.activeSlide = 1;
+      syncCarouselInputs();
+      updateCarouselPreview();
+    }
+
+    function buildTextArray(theme, angle, tone, urgency) {
+      const style = phrase(angle, tone, urgency);
+      return [
+        shorten(theme || 'Tema em análise', 60),
+        `Uma ${style} do tema.`,
+        `Olha o tamanho dessa pauta: ${theme}. Quando a gente entra nela com ${style}, fica claro que não é só manchete.`,
+        tone === 'provocativo' ? 'A real? Tem gente lendo isso do jeito mais fácil possível.' : 'Particularmente, o que mais me chama atenção aqui é o efeito em percepção e narrativa.',
+        angle === 'comparacao' ? 'Quando você compara com outros casos da NFL, a diferença aparece no encaixe e no contexto.' : 'Se você pega os detalhes, a história sai da manchete e vai para as consequências.',
+        urgency === 'quente' ? 'Como o tema está quente, a leitura precisa ser rápida, mas não pode ser rasa.' : 'Com mais calma, dá para separar o barulho do que realmente importa.',
+        tone === 'didatico' ? 'Então vamos simplificar: o que aconteceu, por que importa e o que muda daqui para frente.' : 'Na prática, esse tema abre duas conversas: o agora e o que vem depois.',
+        `É por isso que essa pauta funciona bem em carrossel: ${style}, progressão e retenção.`,
+        'Se a gente quiser deixar isso ainda mais forte, o caminho é simples: consequência clara e pergunta que divide opinião.',
+        'No fim, a pergunta real é esta: isso é só barulho de momento ou sinal concreto de mudança?'
+      ];
+    }
+
+    function renderCarouselStrip() {
+      const strip = $('carouselStrip');
+      strip.innerHTML = '';
+      state.slides.forEach((slide, idx) => {
+        const chip = document.createElement('div');
+        chip.className = 'slide-chip' + (idx + 1 === state.activeSlide ? ' active' : '');
+        chip.innerHTML = `<strong>${idx + 1}</strong><div style="margin-top:6px;">${shorten(slide.title || 'Slide', 36)}</div>`;
+        chip.addEventListener('click', () => {
+          state.activeSlide = idx + 1;
+          syncCarouselInputs();
+          updateCarouselPreview();
+        });
+        strip.appendChild(chip);
+      });
+    }
+
+    function syncCarouselInputs() {
+      const slide = state.slides[state.activeSlide - 1];
+      $('carouselHeadlineInput').value = slide.title || '';
+      $('carouselSublineInput').value = slide.subline || '';
+      $('carouselImageInput').value = slide.image || '';
+      pullStyleToControls('carousel', getCarouselStyle());
+    }
+
+    function generateAll() {
+      syncScore();
+      buildTexts();
+      const improvedTitle = shorten(buildImprovedTheme($('theme').value.trim()), 60);
+      $('postHeadlineInput').value = improvedTitle;
+      $('storyHeadlineInput').value = improvedTitle;
+      $('postSublineInput').value = `Uma ${phrase($('angle').value, $('tone').value, $('urgency').value)} do tema.`;
+      $('storySublineInput').value = $('postSublineInput').value;
+      autofillSlides();
+      updatePostPreview();
+      updateStoryPreview();
+    }
+
+    function bindStyleEditor(prefix, getter, updateFn) {
+      ['Font','Align','TitleSize','SubSize','LineHeight','X','Y','W','SplitPos','SplitColor','SplitSize'].forEach(suffix => {
+        $(prefix + suffix).addEventListener('input', () => {
+          pushControlsToStyle(prefix, getter());
+          updateFn();
+        });
+      });
+    }
+
+    function downloadNode(id, filename) {
+      html2canvas($(id), { backgroundColor: null, scale: 3, useCORS: true, allowTaint: false }).then(canvas => {
+        const a = document.createElement('a');
+        a.download = filename;
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+      }).catch(() => {
+        alert('Não consegui exportar em PNG. Verifique a URL da imagem.');
+      });
+    }
+
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        $('panel-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    $('generateBtn').addEventListener('click', generateAll);
+    $('improveBtn').addEventListener('click', improveTheme);
+
+    ['theme','angle','tone','urgency','sponsor'].forEach(id => {
+      $(id).addEventListener('change', generateAll);
+      $(id).addEventListener('input', () => {
+        if (id === 'theme') {
+          syncScore();
+          buildTexts();
+        }
+      });
+    });
+
+    $('postHeadlineInput').addEventListener('input', updatePostPreview);
+    $('postSublineInput').addEventListener('input', updatePostPreview);
+    $('postImageInput').addEventListener('input', updatePostPreview);
+    $('storyHeadlineInput').addEventListener('input', updateStoryPreview);
+    $('storySublineInput').addEventListener('input', updateStoryPreview);
+    $('storyImageInput').addEventListener('input', updateStoryPreview);
+
+    bindStyleEditor('post', () => state.styles.post, updatePostPreview);
+    bindStyleEditor('story', () => state.styles.story, updateStoryPreview);
+    bindStyleEditor('carousel', () => {
+      if (!state.slides[state.activeSlide - 1].style) state.slides[state.activeSlide - 1].style = { ...state.styles.carouselBase };
+      return state.slides[state.activeSlide - 1].style;
+    }, updateCarouselPreview);
+
+    $('carouselHeadlineInput').addEventListener('input', () => { state.slides[state.activeSlide - 1].title = $('carouselHeadlineInput').value; updateCarouselPreview(); });
+    $('carouselSublineInput').addEventListener('input', () => { state.slides[state.activeSlide - 1].subline = $('carouselSublineInput').value; updateCarouselPreview(); });
+    $('carouselImageInput').addEventListener('input', () => { state.slides[state.activeSlide - 1].image = $('carouselImageInput').value; updateCarouselPreview(); });
+
+    $('prevSlideBtn').addEventListener('click', () => {
+      state.activeSlide = state.activeSlide === 1 ? 10 : state.activeSlide - 1;
+      syncCarouselInputs();
+      updateCarouselPreview();
+    });
+    $('nextSlideBtn').addEventListener('click', () => {
+      state.activeSlide = state.activeSlide === 10 ? 1 : state.activeSlide + 1;
+      syncCarouselInputs();
+      updateCarouselPreview();
+    });
+    $('autofillSlidesBtn').addEventListener('click', autofillSlides);
+
+    $('downloadPostBtn').addEventListener('click', () => downloadNode('postFrame', 'bonizone-post.png'));
+    $('downloadStoryBtn').addEventListener('click', () => downloadNode('storyFrame', 'bonizone-story.png'));
+    $('downloadCarouselSlideBtn').addEventListener('click', () => downloadNode('carouselFrame', `bonizone-slide-${state.activeSlide}.png`));
+
+    document.querySelectorAll('[data-copy]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const txt = $(btn.dataset.copy).textContent || '';
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(txt);
+        }
+      });
+    });
+
+    initEditors();
+    syncScore();
+    buildTexts();
+
+  </script>
+</body>
+</html>
