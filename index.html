@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NFL Draft Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1>NFL Draft Tracker</h1>
+      <p>Plataforma para acompanhar prospectos, status e board pessoal.</p>
+    </header>
+
+    <main class="container">
+      <section class="filters card">
+        <h2>Filtros</h2>
+        <div class="grid">
+          <label>
+            Buscar nome
+            <input type="text" id="search" placeholder="Ex.: Travis Hunter" />
+          </label>
+
+          <label>
+            Posição
+            <select id="positionFilter">
+              <option value="">Todas</option>
+            </select>
+          </label>
+
+          <label>
+            Escola
+            <select id="schoolFilter">
+              <option value="">Todas</option>
+            </select>
+          </label>
+
+          <label>
+            Status
+            <select id="statusFilter">
+              <option value="">Todos</option>
+              <option value="Disponível">Disponível</option>
+              <option value="Selecionado">Selecionado</option>
+              <option value="No board">No board</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="stats card">
+        <h2>Resumo</h2>
+        <div class="stats-grid">
+          <article>
+            <strong id="totalProspects">0</strong>
+            <span>Prospectos</span>
+          </article>
+          <article>
+            <strong id="selectedProspects">0</strong>
+            <span>Selecionados</span>
+          </article>
+          <article>
+            <strong id="boardProspects">0</strong>
+            <span>No seu board</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Prospectos</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Jogador</th>
+                <th>Posição</th>
+                <th>Escola</th>
+                <th>Rank</th>
+                <th>Status</th>
+                <th>Round/Escolha</th>
+                <th>Board</th>
+              </tr>
+            </thead>
+            <tbody id="prospectTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
